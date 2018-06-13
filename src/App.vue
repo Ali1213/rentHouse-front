@@ -44,20 +44,20 @@ export default {
     };
   },
   mounted() {
-    Date.prototype.Format = function(fmt) {
+    var Format = function(date, fmt) {
       var o = {
-        "M+": this.getMonth() + 1, //月份
-        "d+": this.getDate(), //日
-        "h+": this.getHours(), //小时
-        "m+": this.getMinutes(), //分
-        "s+": this.getSeconds(), //秒
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-        S: this.getMilliseconds() //毫秒
+        "M+": date.getMonth() + 1, //月份
+        "d+": date.getDate(), //日
+        "h+": date.getHours(), //小时
+        "m+": date.getMinutes(), //分
+        "s+": date.getSeconds(), //秒
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+        S: date.getMilliseconds() //毫秒
       };
       if (/(y+)/.test(fmt))
         fmt = fmt.replace(
           RegExp.$1,
-          (this.getFullYear() + "").substr(4 - RegExp.$1.length)
+          (date.getFullYear() + "").substr(4 - RegExp.$1.length)
         );
       for (var k in o)
         if (new RegExp("(" + k + ")").test(fmt))
@@ -69,18 +69,17 @@ export default {
           );
       return fmt;
     };
-    axios
-      .get("http://localhost:8000/getAll")
+    axios.get("http://23.91.96.221:8000/getAll")
       .then(response => {
         const data = response.data.data;
-
         this.tableData = data.map(item => {
           return {
             title: item.title,
             url: item.url,
             content: item.content.trim().slice(0, 50),
             username: item.username,
-            create_time: new Date(item.create_time * 1000).Format(
+            create_time: Format(
+              new Date(item.create_time * 1000),
               "yyyy-MM-dd hh:mm:ss"
             )
           };
@@ -89,17 +88,6 @@ export default {
       .catch(function(error) {
         console.log(error);
       });
-  },
-  methods: {
-    startHacking() {
-      this.$notify({
-        title: "It works!",
-        type: "success",
-        message:
-          "We've laid the ground work for you. It's time for you to build something epic!",
-        duration: 5000
-      });
-    }
   }
 };
 </script>
